@@ -1,0 +1,43 @@
+name: VIREN RP Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install sampctl
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/Southclaws/sampctl/master/scripts/install-bin.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          sampctl version
+
+      - name: Ensure dependencies
+        run: sampctl ensure
+
+      - name: Build gamemode
+        run: sampctl build
+
+      - name: Verify AMX artifact
+        run: |
+          test -s gamemodes/virel.amx
+          file gamemodes/virel.amx
+
+      - name: Upload gamemode
+        uses: actions/upload-artifact@v4
+        with:
+          name: VIREN-RP-gamemode
+          path: gamemodes/virel.amx
+          if-no-files-found: error
