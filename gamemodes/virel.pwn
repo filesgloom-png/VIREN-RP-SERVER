@@ -1,5 +1,9 @@
 #include <open.mp>
 
+#include "../src/core/player_data.inc"
+#include "../src/core/storage_core.inc"
+#include "../src/core/character_core.inc"
+#include "../src/core/account_core.inc"
 #include "../src/core/server_core.inc"
 #include "../src/core/player_core.inc"
 
@@ -7,7 +11,7 @@ main()
 {
     print("========================================");
     print(" VIREN RP - server core boot");
-    print(" Build: 0.1.0");
+    print(" Build: 0.2.0");
     print("========================================");
 }
 
@@ -29,4 +33,14 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
     return VIREN_PlayerDisconnect(playerid, reason);
+}
+
+public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
+{
+    return VIREN_PlayerDialogResponse(playerid, dialogid, response, listitem, inputtext);
+}
+
+public OnPlayerCommandText(playerid, cmdtext[])
+{
+    return VIREN_PlayerCommand(playerid, cmdtext);
 }
