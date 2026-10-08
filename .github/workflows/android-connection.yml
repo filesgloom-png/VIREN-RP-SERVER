@@ -156,7 +156,7 @@ jobs:
         run: |
           test -n "$PORTWARP_EMAIL"
           test -n "$PORTWARP_PASSWORD"
-          printf '%s\n%s\n' "$PORTWARP_EMAIL" "$PORTWARP_PASSWORD" | pwrp login --legacy
+          printf '%s\n%s\ny\n' "$PORTWARP_EMAIL" "$PORTWARP_PASSWORD" | pwrp login --legacy
           pwrp status
 
       - name: Connect Portwarp UDP tunnel
