@@ -58,6 +58,8 @@ jobs:
           cp gamemodes/virel.amx "$SERVER_DIR/gamemodes/virel.amx"
           cp config.json "$SERVER_DIR/config.json"
           cp server.cfg "$SERVER_DIR/server.cfg"
+          # Diagnostic only: both open.mp configuration sources must agree on 17837.
+          sed -i 's/^port 7777$/port 17837/' "$SERVER_DIR/server.cfg"
           touch "$SERVER_DIR/scriptfiles/accounts/.gitkeep"
           chmod +x "$SERVER_BIN"
           echo "SERVER_DIR=$SERVER_DIR" >> "$GITHUB_ENV"
