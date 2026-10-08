@@ -21,6 +21,7 @@ enum E_VIREN_PLAYER_DATA
     VIREN_AdminLevel,
     VIREN_FactionID,
     VIREN_FactionRank,
+    bool:VIREN_OnDuty,
     VIREN_JobCooldown,
     VIREN_LoginAttempts
 };
@@ -47,6 +48,7 @@ stock VIREN_ResetPlayerData(playerid)
     VIREN_Player[playerid][VIREN_AdminLevel] = 0;
     VIREN_Player[playerid][VIREN_FactionID] = 0;
     VIREN_Player[playerid][VIREN_FactionRank] = 0;
+    VIREN_Player[playerid][VIREN_OnDuty] = false;
     VIREN_Player[playerid][VIREN_LoginAttempts] = 0;
     VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
     return 1;
