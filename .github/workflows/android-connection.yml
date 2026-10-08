@@ -91,39 +91,33 @@ jobs:
           sleep 2
           sudo ss -uapn | grep ':7777' || true
 
-      - name: Install OpenPort UDP tunnel
+      - name: Install Portwarp CLI
         run: |
-          curl -fsSL https://openport.pw/install.sh | bash
-          command -v openport
-          openport --help || true
+          curl -fsSL https://portwarp.com/download/install.sh | bash
+          command -v pwrp
+          pwrp version
 
-      - name: Create public UDP endpoint
+      - name: Sign in to Portwarp
         run: |
-          openport 7777 --udp > /tmp/openport.log 2>&1 &
-          TUNNEL_PID=$!
-          echo "$TUNNEL_PID" > /tmp/openport.pid
+          echo "========================================"
+          echo "PORTWARP LOGIN"
+          echo "Open the approval URL printed below on your phone."
+          echo "Approve this GitHub Actions device, then return here."
+          echo "========================================"
+          pwrp login
+          pwrp status
 
-          for i in $(seq 1 30); do
-            if grep -Eqi 'openport\.pw:[0-9]+|assigned.*port|public.*port|port.*[0-9]{3,5}' /tmp/openport.log; then
-              break
-            fi
-            sleep 1
-          done
-
-          echo "===== OPENPORT ENDPOINT ====="
-          cat /tmp/openport.log
-          echo "============================="
-
-          if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
-            echo "OpenPort exited unexpectedly."
-            exit 1
-          fi
+      - name: Connect Portwarp UDP tunnel
+        run: |
+          pwrp tunnels
+          pwrp connect --all --detach
+          sleep 5
+          pwrp ps --once
 
       - name: Verify server and tunnel stay alive
         run: |
           for i in $(seq 1 330); do
             SERVER_PID="$(cat /tmp/viren_server.pid)"
-            TUNNEL_PID="$(cat /tmp/openport.pid)"
 
             if ! kill -0 "$SERVER_PID" 2>/dev/null; then
               echo "VIREN RP server stopped."
@@ -131,14 +125,15 @@ jobs:
               exit 1
             fi
 
-            if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
-              echo "OpenPort tunnel stopped."
-              cat /tmp/openport.log
+            if ! pwrp ps --once; then
+              echo "Portwarp tunnel session is not healthy."
+              pwrp logs --tail 50 || true
               exit 1
             fi
 
             if [ "$((i % 10))" -eq 0 ]; then
-              echo "[$i min] VIREN RP server + OpenPort tunnel are alive."
+              echo "[$i min] VIREN RP server + Portwarp tunnel are alive."
+              pwrp ps --once || true
               tail -n 20 "$SERVER_DIR/runtime.log" || true
             fi
 
@@ -150,8 +145,10 @@ jobs:
         run: |
           echo "===== VIREN RUNTIME LOG ====="
           cat "$SERVER_DIR/runtime.log" 2>/dev/null || true
-          echo "===== OPENPORT LOG ====="
-          cat /tmp/openport.log 2>/dev/null || true
+          echo "===== PORTWARP STATUS ====="
+          pwrp status 2>/dev/null || true
+          pwrp ps --once 2>/dev/null || true
+          pwrp logs --tail 100 2>/dev/null || true
           echo "===== TCPDUMP LOG ====="
           cat /tmp/tcpdump.log 2>/dev/null || true
           echo "===== UDP SOCKETS ====="
@@ -165,5 +162,4 @@ jobs:
           path: |
             /tmp/viren-udp.pcap*
             /tmp/tcpdump.log
-            /tmp/openport.log
           if-no-files-found: warn
