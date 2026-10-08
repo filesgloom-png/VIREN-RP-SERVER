@@ -1,0 +1,147 @@
+name: VIREN RP Android Connection Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android_connection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install sampctl
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -fL --retry 3 "https://github.com/Southclaws/sampctl/releases/download/1.13.0/sampctl_1.13.0_linux_amd64.tar.gz" -o /tmp/sampctl.tar.gz
+          tar -xzf /tmp/sampctl.tar.gz -C "$HOME/.local/bin"
+          chmod +x "$HOME/.local/bin/sampctl"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          sampctl version
+
+      - name: Build VIREN RP
+        run: |
+          sampctl ensure
+          sampctl build
+          test -s gamemodes/virel.amx
+
+      - name: Install open.mp runtime dependency
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y libatomic1 libatomic1:i386
+
+      - name: Download open.mp runtime
+        run: |
+          ASSET_URL="$(curl -fsSL https://api.github.com/repos/openmultiplayer/open.mp/releases/latest | jq -r '.assets[] | select(.name == "open.mp-linux-x86.tar.gz") | .browser_download_url')"
+          test -n "$ASSET_URL"
+          curl -fL --retry 3 "$ASSET_URL" -o /tmp/openmp.tar.gz
+          mkdir -p /tmp/openmp
+          tar -xzf /tmp/openmp.tar.gz -C /tmp/openmp
+          SERVER_BIN="$(find /tmp/openmp -type f -name omp-server -print -quit)"
+          test -n "$SERVER_BIN"
+          echo "SERVER_BIN=$SERVER_BIN" >> "$GITHUB_ENV"
+          echo "OPENMP_SERVER_VERSION=$(curl -fsSL https://api.github.com/repos/openmultiplayer/open.mp/releases/latest | jq -r '.tag_name')" >> "$GITHUB_ENV"
+
+      - name: Prepare server
+        run: |
+          SERVER_DIR="$(dirname "$SERVER_BIN")"
+          mkdir -p "$SERVER_DIR/gamemodes" "$SERVER_DIR/filterscripts" "$SERVER_DIR/scriptfiles/accounts"
+          cp gamemodes/virel.amx "$SERVER_DIR/gamemodes/virel.amx"
+          cp config.json "$SERVER_DIR/config.json"
+          cp server.cfg "$SERVER_DIR/server.cfg"
+          touch "$SERVER_DIR/scriptfiles/accounts/.gitkeep"
+          chmod +x "$SERVER_BIN"
+          echo "SERVER_DIR=$SERVER_DIR" >> "$GITHUB_ENV"
+
+      - name: Start VIREN RP server
+        run: |
+          cd "$SERVER_DIR"
+          ./omp-server > runtime.log 2>&1 &
+          SERVER_PID=$!
+          echo "$SERVER_PID" > /tmp/viren_server.pid
+
+          for i in $(seq 1 30); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              cat runtime.log
+              exit 1
+            fi
+            if grep -q "\[VIREN\] Server core initialized." runtime.log; then
+              break
+            fi
+            sleep 1
+          done
+
+          kill -0 "$SERVER_PID"
+          grep -q "\[VIREN\] Server core initialized." runtime.log
+          grep -q "\[VIREN\] v0.9 full LSPD core loaded." runtime.log
+          ss -lun | grep -E ':[[:space:]]*7777[[:space:]]' || ss -lun | grep ':7777'
+          echo "VIREN RP server is running."
+          echo "open.mp: $OPENMP_SERVER_VERSION"
+
+      - name: Install OpenPort UDP tunnel
+        run: |
+          curl -fsSL https://openport.pw/install.sh | bash
+          command -v openport
+          openport --help || true
+
+      - name: Create public UDP endpoint
+        run: |
+          openport 7777 > /tmp/openport.log 2>&1 &
+          TUNNEL_PID=$!
+          echo "$TUNNEL_PID" > /tmp/openport.pid
+
+          for i in $(seq 1 30); do
+            if grep -Eqi 'openport\.pw:[0-9]+|assigned.*port|public.*port|port.*[0-9]{3,5}' /tmp/openport.log; then
+              break
+            fi
+            sleep 1
+          done
+
+          echo "===== OPENPORT ENDPOINT ====="
+          cat /tmp/openport.log
+          echo "============================="
+
+          if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+            echo "OpenPort exited unexpectedly."
+            exit 1
+          fi
+
+      - name: Verify server and tunnel stay alive
+        run: |
+          for i in $(seq 1 330); do
+            SERVER_PID="$(cat /tmp/viren_server.pid)"
+            TUNNEL_PID="$(cat /tmp/openport.pid)"
+
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "VIREN RP server stopped."
+              cat "$SERVER_DIR/runtime.log"
+              exit 1
+            fi
+
+            if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+              echo "OpenPort tunnel stopped."
+              cat /tmp/openport.log
+              exit 1
+            fi
+
+            if [ "$((i % 10))" -eq 0 ]; then
+              echo "[$i min] VIREN RP server + OpenPort tunnel are alive."
+              tail -n 20 "$SERVER_DIR/runtime.log" || true
+            fi
+
+            sleep 60
+          done
+
+      - name: Final logs
+        if: always()
+        run: |
+          echo "===== VIREN RUNTIME LOG ====="
+          cat "$SERVER_DIR/runtime.log" 2>/dev/null || true
+          echo "===== OPENPORT LOG ====="
+          cat /tmp/openport.log 2>/dev/null || true
