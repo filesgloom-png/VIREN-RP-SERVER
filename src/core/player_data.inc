@@ -18,6 +18,7 @@ enum E_VIREN_PLAYER_DATA
     VIREN_Level,
     VIREN_XP,
     VIREN_Job,
+    VIREN_AdminLevel,
     VIREN_FactionID,
     VIREN_FactionRank,
     VIREN_JobCooldown,
@@ -43,6 +44,7 @@ stock VIREN_ResetPlayerData(playerid)
     VIREN_Player[playerid][VIREN_XP] = 0;
     VIREN_Player[playerid][VIREN_Job] = 0;
     VIREN_Player[playerid][VIREN_JobCooldown] = 0;
+    VIREN_Player[playerid][VIREN_AdminLevel] = 0;
     VIREN_Player[playerid][VIREN_FactionID] = 0;
     VIREN_Player[playerid][VIREN_FactionRank] = 0;
     VIREN_Player[playerid][VIREN_LoginAttempts] = 0;
