@@ -3,7 +3,7 @@
 #endif
 #define _VIREN_SERVER_CORE_INCLUDED
 
-#define VIREN_VERSION "0.3.0"
+#define VIREN_VERSION "0.4.0"
 #define VIREN_NAME "VIREN RP"
 
 stock VIREN_ServerInit()
@@ -15,7 +15,7 @@ stock VIREN_ServerInit()
     DisableInteriorEnterExits();
 
     print("[VIREN] Server core initialized.");
-    print("[VIREN] v0.3 auth, character and HUD flow loaded.");
+    print("[VIREN] v0.4 economy and RP systems loaded.");
     return 1;
 }
 
