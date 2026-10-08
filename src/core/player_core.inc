@@ -202,6 +202,12 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
         return 1;
     }
 
+    if (VIREN_EconomyCommand(playerid, cmdtext))
+        return 1;
+
+    if (VIREN_RPCommand(playerid, cmdtext))
+        return 1;
+
     if (!strcmp(cmdtext, "/stats", true))
     {
         VIREN_ShowStats(playerid);
@@ -211,8 +217,8 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
     if (!strcmp(cmdtext, "/help", true))
     {
         SendClientMessage(playerid, 0x66CCFFFF, "VIREN RP — команды:");
-        SendClientMessage(playerid, 0xFFFFFFFF, "/stats — статистика персонажа");
-        SendClientMessage(playerid, 0xFFFFFFFF, "/help — список доступных команд");
+        SendClientMessage(playerid, 0xFFFFFFFF, "/stats /money /pay /deposit /withdraw");
+        SendClientMessage(playerid, 0xFFFFFFFF, "/me /do /try /help");
         return 1;
     }
 
