@@ -250,17 +250,38 @@ stock VIREN_AdminCommand(playerid, const cmdtext[])
         }
 
         new args[64];
-        strmid(args, cmdtext, 12, strlen(cmdtext), sizeof(args));
+        new token[16];
         new targetid = -1;
         new factionid = -1;
         new rank = 1;
-        new first[16];
-        new second[16];
-        new third[16];
+        new pos = 12;
 
-        if (sscanf(args, "p< >ddd", targetid, factionid, rank))
+        strmid(args, cmdtext, pos, strlen(cmdtext), sizeof(args));
+
+        while (args[pos - 12] == ' ') pos++;
+        new start = pos;
+        while (cmdtext[pos] != EOS && cmdtext[pos] != ' ') pos++;
+        strmid(token, cmdtext, start, pos, sizeof(token));
+        targetid = strval(token);
+
+        while (cmdtext[pos] == ' ') pos++;
+        start = pos;
+        while (cmdtext[pos] != EOS && cmdtext[pos] != ' ') pos++;
+        strmid(token, cmdtext, start, pos, sizeof(token));
+        factionid = strval(token);
+
+        while (cmdtext[pos] == ' ') pos++;
+        if (cmdtext[pos] != EOS)
         {
-            SendClientMessage(playerid, 0xFFCC66FF, "Использование: /setfaction [playerid] [factionid] [rank].");
+            start = pos;
+            while (cmdtext[pos] != EOS && cmdtext[pos] != ' ') pos++;
+            strmid(token, cmdtext, start, pos, sizeof(token));
+            rank = strval(token);
+        }
+
+        if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid))
+        {
+            SendClientMessage(playerid, 0xFF6666FF, "Игрок не найден.");
             return 1;
         }
 
@@ -269,24 +290,40 @@ stock VIREN_AdminCommand(playerid, const cmdtext[])
 
     if (strfind(cmdtext, "/setrank ", true) == 0)
     {
+        new args[48];
+        new token[16];
         new targetid = -1;
         new rank = 0;
-        new args[48];
-        strmid(args, cmdtext, 9, strlen(cmdtext), sizeof(args));
-        if (sscanf(args, "p< >dd", targetid, rank))
+        new pos = 9;
+
+        strmid(args, cmdtext, pos, strlen(cmdtext), sizeof(args));
+
+        while (cmdtext[pos] == ' ') pos++;
+        new start = pos;
+        while (cmdtext[pos] != EOS && cmdtext[pos] != ' ') pos++;
+        strmid(token, cmdtext, start, pos, sizeof(token));
+        targetid = strval(token);
+
+        while (cmdtext[pos] == ' ') pos++;
+        start = pos;
+        while (cmdtext[pos] != EOS && cmdtext[pos] != ' ') pos++;
+        strmid(token, cmdtext, start, pos, sizeof(token));
+        rank = strval(token);
+
+        if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid))
         {
-            SendClientMessage(playerid, 0xFFCC66FF, "Использование: /setrank [playerid] [rank].");
+            SendClientMessage(playerid, 0xFF6666FF, "Игрок не найден.");
             return 1;
         }
+
         return VIREN_AdminSetRank(playerid, targetid, rank);
     }
 
     if (strfind(cmdtext, "/invite ", true) == 0)
     {
-        new targetid = -1;
         new args[16];
         strmid(args, cmdtext, 8, strlen(cmdtext), sizeof(args));
-        targetid = strval(args);
+        new targetid = strval(args);
         if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid))
         {
             SendClientMessage(playerid, 0xFF6666FF, "Игрок не найден.");
@@ -297,10 +334,9 @@ stock VIREN_AdminCommand(playerid, const cmdtext[])
 
     if (strfind(cmdtext, "/uninvite ", true) == 0)
     {
-        new targetid = -1;
         new args[16];
         strmid(args, cmdtext, 10, strlen(cmdtext), sizeof(args));
-        targetid = strval(args);
+        new targetid = strval(args);
         if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid))
         {
             SendClientMessage(playerid, 0xFF6666FF, "Игрок не найден.");
@@ -312,9 +348,8 @@ stock VIREN_AdminCommand(playerid, const cmdtext[])
     if (strfind(cmdtext, "/faction transfer ", true) == 0)
     {
         new args[16];
-        new targetid;
         strmid(args, cmdtext, 18, strlen(cmdtext), sizeof(args));
-        targetid = strval(args);
+        new targetid = strval(args);
         if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid))
         {
             SendClientMessage(playerid, 0xFF6666FF, "Игрок не найден.");
