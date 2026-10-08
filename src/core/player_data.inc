@@ -17,6 +17,8 @@ enum E_VIREN_PLAYER_DATA
     VIREN_Bank,
     VIREN_Level,
     VIREN_XP,
+    VIREN_Job,
+    VIREN_JobCooldown,
     VIREN_LoginAttempts
 };
 
@@ -37,6 +39,8 @@ stock VIREN_ResetPlayerData(playerid)
     VIREN_Player[playerid][VIREN_Bank] = 0;
     VIREN_Player[playerid][VIREN_Level] = 1;
     VIREN_Player[playerid][VIREN_XP] = 0;
+    VIREN_Player[playerid][VIREN_Job] = 0;
+    VIREN_Player[playerid][VIREN_JobCooldown] = 0;
     VIREN_Player[playerid][VIREN_LoginAttempts] = 0;
     VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
     return 1;
