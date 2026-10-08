@@ -114,7 +114,12 @@ stock VIREN_SpawnCharacter(playerid)
         0
     );
 
+    TogglePlayerSpectating(playerid, false);
     SpawnPlayer(playerid);
+
+    VIREN_HudCreate(playerid);
+    VIREN_HudUpdate(playerid);
+    VIREN_HudShow(playerid);
 
     new message[144];
     format(
@@ -153,5 +158,7 @@ stock VIREN_ShowStats(playerid)
         VIREN_Player[playerid][VIREN_Bank]
     );
     SendClientMessage(playerid, 0xFFFFFFFF, message);
+
+    VIREN_HudUpdate(playerid);
     return 1;
 }
