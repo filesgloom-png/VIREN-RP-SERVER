@@ -99,7 +99,7 @@ jobs:
 
       - name: Create public UDP endpoint
         run: |
-          openport 7777 > /tmp/openport.log 2>&1 &
+          openport 7777 --udp > /tmp/openport.log 2>&1 &
           TUNNEL_PID=$!
           echo "$TUNNEL_PID" > /tmp/openport.pid
 
