@@ -11,6 +11,21 @@
 
 #define VIREN_FACTION_MIN_RANK 1
 #define VIREN_FACTION_MAX_RANK 10
+#define VIREN_FACTION_PERMISSION_CHAT 1
+#define VIREN_FACTION_PERMISSION_INVITE 8
+#define VIREN_FACTION_PERMISSION_RANK 8
+#define VIREN_FACTION_PERMISSION_LEADER 10
+
+#define VIREN_LSPD_RANK_CADET 1
+#define VIREN_LSPD_RANK_OFFICER 2
+#define VIREN_LSPD_RANK_SENIOR_OFFICER 3
+#define VIREN_LSPD_RANK_CORPORAL 4
+#define VIREN_LSPD_RANK_SERGEANT 5
+#define VIREN_LSPD_RANK_LIEUTENANT 6
+#define VIREN_LSPD_RANK_CAPTAIN 7
+#define VIREN_LSPD_RANK_COMMANDER 8
+#define VIREN_LSPD_RANK_DEPUTY_CHIEF 9
+#define VIREN_LSPD_RANK_CHIEF 10
 
 stock VIREN_FactionName(factionid, output[], size)
 {
@@ -56,6 +71,101 @@ stock VIREN_FactionMaxRank(factionid)
         case VIREN_FACTION_GANG: return 10;
     }
     return 0;
+}
+
+stock VIREN_FactionRankName(factionid, rank, output[], size)
+{
+    if (!VIREN_FactionExists(factionid) || rank < VIREN_FACTION_MIN_RANK || rank > VIREN_FactionMaxRank(factionid))
+    {
+        format(output, size, "Без ранга");
+        return 1;
+    }
+
+    if (factionid == VIREN_FACTION_LSPD)
+    {
+        switch (rank)
+        {
+            case 1: format(output, size, "Cadet");
+            case 2: format(output, size, "Officer");
+            case 3: format(output, size, "Senior Officer");
+            case 4: format(output, size, "Corporal");
+            case 5: format(output, size, "Sergeant");
+            case 6: format(output, size, "Lieutenant");
+            case 7: format(output, size, "Captain");
+            case 8: format(output, size, "Commander");
+            case 9: format(output, size, "Deputy Chief");
+            case 10: format(output, size, "Chief");
+        }
+        return 1;
+    }
+
+    format(output, size, "Rank %d", rank);
+    return 1;
+}
+
+stock bool:VIREN_FactionHasPermission(playerid, required_rank)
+{
+    return VIREN_FactionHasRank(playerid, required_rank);
+}
+
+stock VIREN_FactionLog(const action[], actorid, targetid, detail)
+{
+    printf("[VIREN][FACTION] action=%s actor=%d target=%d detail=%d", action, actorid, targetid, detail);
+    return 1;
+}
+
+stock VIREN_FactionDuty(playerid)
+{
+    if (VIREN_Player[playerid][VIREN_FactionID] != VIREN_FACTION_LSPD)
+    {
+        SendClientMessage(playerid, 0xFF6666FF, "Система duty сейчас доступна только для LSPD.");
+        return 1;
+    }
+
+    VIREN_Player[playerid][VIREN_OnDuty] = !VIREN_Player[playerid][VIREN_OnDuty];
+
+    if (VIREN_Player[playerid][VIREN_OnDuty])
+    {
+        SendClientMessage(playerid, 0x66FF66FF, "Вы заступили на службу LSPD.");
+        VIREN_FactionLog("duty_on", playerid, playerid, VIREN_Player[playerid][VIREN_FactionRank]);
+    }
+    else
+    {
+        SendClientMessage(playerid, 0xFFCC66FF, "Вы закончили службу LSPD.");
+        VIREN_FactionLog("duty_off", playerid, playerid, VIREN_Player[playerid][VIREN_FactionRank]);
+    }
+    return 1;
+}
+
+stock VIREN_FactionChat(playerid, const text[])
+{
+    new factionid = VIREN_Player[playerid][VIREN_FactionID];
+    if (factionid == VIREN_FACTION_NONE)
+    {
+        SendClientMessage(playerid, 0xFF6666FF, "Вы не состоите во фракции.");
+        return 1;
+    }
+
+    new name[MAX_PLAYER_NAME + 1];
+    new rank_name[32];
+    new message[192];
+    GetPlayerName(playerid, name, sizeof(name));
+    VIREN_FactionRankName(factionid, VIREN_Player[playerid][VIREN_FactionRank], rank_name, sizeof(rank_name));
+    format(message, sizeof(message), "[F] %s [%s]: %s", name, rank_name, text);
+
+    for (new i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (IsPlayerConnected(i) &&
+            VIREN_Player[i][VIREN_LoggedIn] &&
+            VIREN_Player[i][VIREN_HasCharacter] &&
+            VIREN_Player[i][VIREN_FactionID] == factionid)
+        {
+            SendClientMessage(i, 0x66CCFFFF, message);
+        }
+    }
+
+    VIREN_FactionLog("chat", playerid, playerid, factionid);
+    return 1;
 }
 
 stock bool:VIREN_FactionIsLeader(playerid)
@@ -137,12 +247,14 @@ stock VIREN_FactionCommand(playerid, const cmdtext[])
         new message[128];
 
         VIREN_FactionName(VIREN_Player[playerid][VIREN_FactionID], faction_name, sizeof(faction_name));
+        VIREN_FactionRankName(VIREN_Player[playerid][VIREN_FactionID], VIREN_Player[playerid][VIREN_FactionRank], faction_type, sizeof(faction_type));
         VIREN_FactionTypeName(VIREN_Player[playerid][VIREN_FactionID], faction_type, sizeof(faction_type));
 
-        format(message, sizeof(message), "Фракция: %s | Тип: %s | Ранг: %d | Лидер: %s",
+        format(message, sizeof(message), "Фракция: %s | Тип: %s | Ранг: %d (%s) | Лидер: %s",
             faction_name,
             faction_type,
             VIREN_Player[playerid][VIREN_FactionRank],
+            faction_type,
             VIREN_FactionIsLeader(playerid) ? "Да" : "Нет");
         SendClientMessage(playerid, 0xFFFFFFFF, message);
         SendClientMessage(playerid, 0x66CCFFFF, "Команды: /members, /faction leave, /faction transfer [playerid].");
@@ -187,6 +299,29 @@ stock VIREN_FactionCommand(playerid, const cmdtext[])
         format(line, sizeof(line), "Онлайн участников: %d.", count);
         SendClientMessage(playerid, 0xFFFFFFFF, line);
         return 1;
+    }
+
+    if (!strcmp(cmdtext, "/f", true))
+    {
+        SendClientMessage(playerid, 0x66CCFFFF, "Использование: /f [сообщение].");
+        return 1;
+    }
+
+    if (strfind(cmdtext, "/f ", true) == 0)
+    {
+        new text[144];
+        strmid(text, cmdtext, 3, strlen(cmdtext), sizeof(text));
+        if (strlen(text) == 0)
+        {
+            SendClientMessage(playerid, 0xFFCC66FF, "Использование: /f [сообщение].");
+            return 1;
+        }
+        return VIREN_FactionChat(playerid, text);
+    }
+
+    if (!strcmp(cmdtext, "/duty", true))
+    {
+        return VIREN_FactionDuty(playerid);
     }
 
     if (!strcmp(cmdtext, "/faction leave", true))
