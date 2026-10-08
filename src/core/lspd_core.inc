@@ -268,7 +268,7 @@ stock VIREN_LSPD_CommandCuff(playerid, const cmdtext[], bool:uncuff)
     if (uncuff)
     {
         VIREN_Player[targetid][VIREN_Cuffed] = false;
-        SetPlayerControllable(targetid, true);
+        TogglePlayerControllable(targetid, true);
         SendClientMessage(targetid, 0x66FF66FF, "С вас сняли наручники.");
         SendClientMessage(playerid, 0x66FF66FF, "Наручники сняты.");
         VIREN_FactionLog("uncuff", playerid, targetid, 0);
@@ -276,7 +276,7 @@ stock VIREN_LSPD_CommandCuff(playerid, const cmdtext[], bool:uncuff)
     else
     {
         VIREN_Player[targetid][VIREN_Cuffed] = true;
-        SetPlayerControllable(targetid, false);
+        TogglePlayerControllable(targetid, false);
         SendClientMessage(targetid, 0xFFCC66FF, "На вас надели наручники.");
         SendClientMessage(playerid, 0x66FF66FF, "Игрок закован.");
         VIREN_FactionLog("cuff", playerid, targetid, 0);
@@ -457,7 +457,7 @@ stock VIREN_LSPD_CommandArrest(playerid, const cmdtext[])
 
     VIREN_Player[targetid][VIREN_JailSeconds] = seconds;
     VIREN_Player[targetid][VIREN_Cuffed] = false;
-    SetPlayerControllable(targetid, true);
+    TogglePlayerControllable(targetid, true);
     SetPlayerPos(targetid, VIREN_LSPD_JAIL_X, VIREN_LSPD_JAIL_Y, VIREN_LSPD_JAIL_Z);
     SetPlayerFacingAngle(targetid, VIREN_LSPD_JAIL_A);
     SetPlayerInterior(targetid, 6);
@@ -488,6 +488,8 @@ public VIREN_LSPD_JailTick(playerid)
 
         if (VIREN_Player[playerid][VIREN_JailSeconds] == 0)
         {
+            if (VIREN_LSPD_JailTimer[playerid] != 0)
+                KillTimer(VIREN_LSPD_JailTimer[playerid]);
             SetPlayerInterior(playerid, 0);
             SetPlayerVirtualWorld(playerid, 0);
             SetPlayerPos(playerid, 1481.0, -1771.0, 18.8);
