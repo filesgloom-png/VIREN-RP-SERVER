@@ -228,7 +228,7 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
         SendClientMessage(playerid, 0x66CCFFFF, "VIREN RP — команды:");
         SendClientMessage(playerid, 0xFFFFFFFF, "/stats /money /pay /deposit /withdraw");
         SendClientMessage(playerid, 0xFFFFFFFF, "/me /do /try /help");
-        SendClientMessage(playerid, 0xFFFFFFFF, "/faction /members /faction leave /faction transfer [playerid]");
+        SendClientMessage(playerid, 0xFFFFFFFF, "/faction /members /f /duty /faction leave /faction transfer [playerid]");
         SendClientMessage(playerid, 0xFFFFFFFF, "/invite [playerid] /uninvite [playerid] /setrank [playerid] [rank]");
         return 1;
     }
