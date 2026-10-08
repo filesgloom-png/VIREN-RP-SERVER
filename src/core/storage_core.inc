@@ -74,6 +74,8 @@ stock VIREN_WriteAccount(playerid)
     format(line, sizeof(line), "Level=%d", VIREN_Player[playerid][VIREN_Level]); fwrite(file, line);
     format(line, sizeof(line), "XP=%d", VIREN_Player[playerid][VIREN_XP]); fwrite(file, line);
     format(line, sizeof(line), "Job=%d", VIREN_Player[playerid][VIREN_Job]); fwrite(file, line);
+    format(line, sizeof(line), "FactionID=%d", VIREN_Player[playerid][VIREN_FactionID]); fwrite(file, line);
+    format(line, sizeof(line), "FactionRank=%d", VIREN_Player[playerid][VIREN_FactionRank]); fwrite(file, line);
 
     fclose(file);
     return 1;
@@ -111,6 +113,12 @@ stock VIREN_LoadAccount(playerid)
 
     if (VIREN_ReadAccountValue(playerid, "Job", value, sizeof(value)))
         VIREN_Player[playerid][VIREN_Job] = strval(value);
+
+    if (VIREN_ReadAccountValue(playerid, "FactionID", value, sizeof(value)))
+        VIREN_Player[playerid][VIREN_FactionID] = strval(value);
+
+    if (VIREN_ReadAccountValue(playerid, "FactionRank", value, sizeof(value)))
+        VIREN_Player[playerid][VIREN_FactionRank] = strval(value);
 
     VIREN_Player[playerid][VIREN_HasCharacter] =
         (strlen(VIREN_Player[playerid][VIREN_CharacterName]) > 0);
