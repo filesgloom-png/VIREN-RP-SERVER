@@ -98,13 +98,13 @@ jobs:
           pwrp version
 
       - name: Sign in to Portwarp
+        env:
+          PORTWARP_EMAIL: ${{ secrets.PORTWARP_EMAIL }}
+          PORTWARP_PASSWORD: ${{ secrets.PORTWARP_PASSWORD }}
         run: |
-          echo "========================================"
-          echo "PORTWARP LOGIN"
-          echo "Open the approval URL printed below on your phone."
-          echo "Approve this GitHub Actions device, then return here."
-          echo "========================================"
-          pwrp login
+          test -n "$PORTWARP_EMAIL"
+          test -n "$PORTWARP_PASSWORD"
+          printf '%s\n%s\n' "$PORTWARP_EMAIL" "$PORTWARP_PASSWORD" | pwrp login --legacy
           pwrp status
 
       - name: Connect Portwarp UDP tunnel
