@@ -244,17 +244,18 @@ stock VIREN_FactionCommand(playerid, const cmdtext[])
     {
         new faction_name[32];
         new faction_type[32];
-        new message[128];
+        new rank_name[32];
+        new message[160];
 
         VIREN_FactionName(VIREN_Player[playerid][VIREN_FactionID], faction_name, sizeof(faction_name));
-        VIREN_FactionRankName(VIREN_Player[playerid][VIREN_FactionID], VIREN_Player[playerid][VIREN_FactionRank], faction_type, sizeof(faction_type));
         VIREN_FactionTypeName(VIREN_Player[playerid][VIREN_FactionID], faction_type, sizeof(faction_type));
+        VIREN_FactionRankName(VIREN_Player[playerid][VIREN_FactionID], VIREN_Player[playerid][VIREN_FactionRank], rank_name, sizeof(rank_name));
 
         format(message, sizeof(message), "Фракция: %s | Тип: %s | Ранг: %d (%s) | Лидер: %s",
             faction_name,
             faction_type,
             VIREN_Player[playerid][VIREN_FactionRank],
-            faction_type,
+            rank_name,
             VIREN_FactionIsLeader(playerid) ? "Да" : "Нет");
         SendClientMessage(playerid, 0xFFFFFFFF, message);
         SendClientMessage(playerid, 0x66CCFFFF, "Команды: /members, /faction leave, /faction transfer [playerid].");
