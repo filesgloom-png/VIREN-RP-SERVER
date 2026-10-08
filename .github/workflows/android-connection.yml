@@ -59,9 +59,15 @@ jobs:
           chmod +x "$SERVER_BIN"
           echo "SERVER_DIR=$SERVER_DIR" >> "$GITHUB_ENV"
 
-      - name: Start VIREN RP server
+      - name: Start VIREN RP server on diagnostic port 17837
         run: |
           cd "$SERVER_DIR"
+
+          # Diagnostic only: make open.mp listen on the same port used by the
+          # Portwarp public endpoint, while keeping the repository config unchanged.
+          jq '.network.port = 17837' config.json > config.diagnostic.json
+          mv config.diagnostic.json config.json
+
           ./omp-server > runtime.log 2>&1 &
           SERVER_PID=$!
           echo "$SERVER_PID" > /tmp/viren_server.pid
@@ -80,16 +86,57 @@ jobs:
           kill -0 "$SERVER_PID"
           grep -q "\[VIREN\] Server core initialized." runtime.log
           grep -q "\[VIREN\] v0.9 full LSPD core loaded." runtime.log
-          ss -lun | grep -E ':[[:space:]]*7777[[:space:]]' || ss -lun | grep ':7777'
-          echo "VIREN RP server is running."
+          ss -lun | grep -E ':[[:space:]]*17837[[:space:]]' || ss -lun | grep ':17837'
+          echo "VIREN RP diagnostic server is running on UDP 17837."
+
           echo "open.mp: $OPENMP_SERVER_VERSION"
+
+      - name: Start UDP relay 7777 to 17837
+        run: |
+          cat > /tmp/viren_udp_relay.py <<'PY'
+          import socket
+          import threading
+
+          LISTEN = ("127.0.0.1", 7777)
+          SERVER = ("127.0.0.1", 17837)
+
+          client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          client_sock.bind(LISTEN)
+
+          last_client = {"addr": None}
+
+          def from_client():
+              while True:
+                  data, addr = client_sock.recvfrom(65535)
+                  last_client["addr"] = addr
+                  server_sock.sendto(data, SERVER)
+
+          def from_server():
+              while True:
+                  data, addr = server_sock.recvfrom(65535)
+                  target = last_client["addr"]
+                  if target:
+                      client_sock.sendto(data, target)
+
+          threading.Thread(target=from_client, daemon=True).start()
+          threading.Thread(target=from_server, daemon=True).start()
+
+          print("VIREN UDP diagnostic relay: 127.0.0.1:7777 <-> 127.0.0.1:17837", flush=True)
+          threading.Event().wait()
+          PY
+
+          python3 /tmp/viren_udp_relay.py > /tmp/viren-relay.log 2>&1 &
+          echo $! > /tmp/viren_relay.pid
+          sleep 2
+          sudo ss -lunp | grep -E ':7777|:17837' || true
 
       - name: Start UDP packet capture
         run: |
-          sudo tcpdump -ni any udp port 7777 -s 0 -U -C 10 -W 5 -w /tmp/viren-udp.pcap > /tmp/tcpdump.log 2>&1 &
+          sudo tcpdump -ni any 'udp port 7777 or udp port 17837' -s 0 -U -C 10 -W 5 -w /tmp/viren-udp.pcap > /tmp/tcpdump.log 2>&1 &
           echo $! > /tmp/tcpdump.pid
           sleep 2
-          sudo ss -uapn | grep ':7777' || true
+          sudo ss -uapn | grep -E ':7777|:17837' || true
 
       - name: Install Portwarp CLI
         run: |
@@ -151,6 +198,8 @@ jobs:
           pwrp logs --tail 100 2>/dev/null || true
           echo "===== TCPDUMP LOG ====="
           cat /tmp/tcpdump.log 2>/dev/null || true
+          echo "===== UDP RELAY LOG ====="
+          cat /tmp/viren-relay.log 2>/dev/null || true
           echo "===== UDP SOCKETS ====="
           sudo ss -uapn || true
 
@@ -162,4 +211,5 @@ jobs:
           path: |
             /tmp/viren-udp.pcap*
             /tmp/tcpdump.log
+            /tmp/viren-relay.log
           if-no-files-found: warn
