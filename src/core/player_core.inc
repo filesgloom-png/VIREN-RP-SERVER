@@ -208,6 +208,9 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
     if (VIREN_JobCommand(playerid, cmdtext))
         return 1;
 
+    if (VIREN_LSPD_Command(playerid, cmdtext))
+        return 1;
+
     if (VIREN_AdminCommand(playerid, cmdtext))
         return 1;
 
@@ -230,6 +233,7 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
         SendClientMessage(playerid, 0xFFFFFFFF, "/me /do /try /help");
         SendClientMessage(playerid, 0xFFFFFFFF, "/faction /members /f /duty /faction leave /faction transfer [playerid]");
         SendClientMessage(playerid, 0xFFFFFFFF, "/invite [playerid] /uninvite [playerid] /setrank [playerid] [rank]");
+        SendClientMessage(playerid, 0xFFFFFFFF, "LSPD: /duty /wanted /su /cuff /uncuff /arrest /ticket /frisk /takeweapon");
         return 1;
     }
 
