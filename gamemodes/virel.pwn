@@ -8,6 +8,7 @@
 #include "../src/core/economy_core.inc"
 #include "../src/core/rp_core.inc"
 #include "../src/core/job_core.inc"
+#include "../src/core/faction_core.inc"
 #include "../src/core/server_core.inc"
 #include "../src/core/player_core.inc"
 
@@ -15,7 +16,7 @@ main()
 {
     print("========================================");
     print(" VIREN RP - server core boot");
-    print(" Build: 0.5.0");
+    print(" Build: 0.6.0");
     print("========================================");
 }
 
