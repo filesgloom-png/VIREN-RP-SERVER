@@ -2,6 +2,9 @@ name: VIREN RP Android Connection Test
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
