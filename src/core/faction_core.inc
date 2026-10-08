@@ -116,25 +116,7 @@ stock VIREN_FactionLog(const action[], actorid, targetid, detail)
 
 stock VIREN_FactionDuty(playerid)
 {
-    if (VIREN_Player[playerid][VIREN_FactionID] != VIREN_FACTION_LSPD)
-    {
-        SendClientMessage(playerid, 0xFF6666FF, "Система duty сейчас доступна только для LSPD.");
-        return 1;
-    }
-
-    VIREN_Player[playerid][VIREN_OnDuty] = !VIREN_Player[playerid][VIREN_OnDuty];
-
-    if (VIREN_Player[playerid][VIREN_OnDuty])
-    {
-        SendClientMessage(playerid, 0x66FF66FF, "Вы заступили на службу LSPD.");
-        VIREN_FactionLog("duty_on", playerid, playerid, VIREN_Player[playerid][VIREN_FactionRank]);
-    }
-    else
-    {
-        SendClientMessage(playerid, 0xFFCC66FF, "Вы закончили службу LSPD.");
-        VIREN_FactionLog("duty_off", playerid, playerid, VIREN_Player[playerid][VIREN_FactionRank]);
-    }
-    return 1;
+    return VIREN_LSPD_Duty(playerid);
 }
 
 stock VIREN_FactionChat(playerid, const text[])
