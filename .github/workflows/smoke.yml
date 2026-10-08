@@ -1,0 +1,20 @@
+name: VIREN RP Smoke Test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runner smoke test
+        run: |
+          echo "VIREN RP GitHub Actions runner is alive"
+          uname -a
+          test -n "$RUNNER_OS"
+          test "$RUNNER_OS" = "Linux"
