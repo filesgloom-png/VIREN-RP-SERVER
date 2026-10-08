@@ -9,6 +9,7 @@
 #include "../src/core/rp_core.inc"
 #include "../src/core/job_core.inc"
 #include "../src/core/faction_core.inc"
+#include "../src/core/admin_core.inc"
 #include "../src/core/server_core.inc"
 #include "../src/core/player_core.inc"
 
