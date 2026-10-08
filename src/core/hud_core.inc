@@ -3,8 +3,6 @@
 #endif
 #define _VIREN_HUD_CORE_INCLUDED
 
-new PlayerText:VIREN_Hud[MAX_PLAYERS];
-
 stock VIREN_HudCreate(playerid)
 {
     VIREN_Hud[playerid] = CreatePlayerTextDraw(playerid, 18.0, 420.0, "VIREN RP");
@@ -46,7 +44,10 @@ stock VIREN_HudShow(playerid)
 
 stock VIREN_HudDestroy(playerid)
 {
-    PlayerTextDrawDestroy(playerid, VIREN_Hud[playerid]);
-    VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
+    if (VIREN_Hud[playerid] != PlayerText:INVALID_TEXT_DRAW)
+    {
+        PlayerTextDrawDestroy(playerid, VIREN_Hud[playerid]);
+        VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
+    }
     return 1;
 }
