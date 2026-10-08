@@ -33,8 +33,9 @@ jobs:
 
       - name: Install open.mp runtime dependency
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libatomic1
+          sudo apt-get install -y libatomic1 libatomic1:i386
 
       - name: Download latest open.mp Linux server
         run: |
