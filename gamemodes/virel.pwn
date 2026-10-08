@@ -17,7 +17,7 @@ main()
 {
     print("========================================");
     print(" VIREN RP - server core boot");
-    print(" Build: 0.6.0");
+    print(" Build: 0.8.0");
     print("========================================");
 }
 
