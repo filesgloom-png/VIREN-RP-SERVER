@@ -3,7 +3,7 @@
 #endif
 #define _VIREN_SERVER_CORE_INCLUDED
 
-#define VIREN_VERSION "0.7.0"
+#define VIREN_VERSION "0.8.0"
 #define VIREN_NAME "VIREN RP"
 
 stock VIREN_ServerInit()
@@ -15,7 +15,7 @@ stock VIREN_ServerInit()
     DisableInteriorEnterExits();
 
     print("[VIREN] Server core initialized.");
-    print("[VIREN] v0.7 admin and faction management loaded.");
+    print("[VIREN] v0.8 rank system and LSPD foundation loaded.");
     return 1;
 }
 
