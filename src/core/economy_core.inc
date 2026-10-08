@@ -196,7 +196,7 @@ stock VIREN_EconomyCommand(playerid, const cmdtext[])
         return 1;
     }
 
-    if (!strncmp(cmdtext, "/pay", 4, true))
+    if (strfind(cmdtext, "/pay", true) == 0 && (cmdtext[4] == EOS || cmdtext[4] == ' '))
     {
         if (!VIREN_ParsePay(cmdtext, targetid, amount))
         {
@@ -257,7 +257,7 @@ stock VIREN_EconomyCommand(playerid, const cmdtext[])
         return 1;
     }
 
-    if (!strncmp(cmdtext, "/deposit", 8, true))
+    if (strfind(cmdtext, "/deposit", true) == 0 && (cmdtext[8] == EOS || cmdtext[8] == ' '))
     {
         if (!VIREN_ParseAmount(cmdtext, 8, amount))
         {
@@ -288,7 +288,7 @@ stock VIREN_EconomyCommand(playerid, const cmdtext[])
         return 1;
     }
 
-    if (!strncmp(cmdtext, "/withdraw", 9, true))
+    if (strfind(cmdtext, "/withdraw", true) == 0 && (cmdtext[9] == EOS || cmdtext[9] == ' '))
     {
         if (!VIREN_ParseAmount(cmdtext, 9, amount))
         {
