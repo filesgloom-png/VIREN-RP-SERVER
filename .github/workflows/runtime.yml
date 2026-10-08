@@ -31,6 +31,11 @@ jobs:
           sampctl build
           test -s gamemodes/virel.amx
 
+      - name: Install open.mp runtime dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libatomic1
+
       - name: Download latest open.mp Linux server
         run: |
           ASSET_URL="$(curl -fsSL https://api.github.com/repos/openmultiplayer/open.mp/releases/latest | jq -r '.assets[] | select(.name == "open.mp-linux-x86.tar.gz") | .browser_download_url')"
