@@ -21,6 +21,7 @@ enum E_VIREN_PLAYER_DATA
 };
 
 new VIREN_Player[MAX_PLAYERS][E_VIREN_PLAYER_DATA];
+new PlayerText:VIREN_Hud[MAX_PLAYERS];
 
 stock VIREN_ResetPlayerData(playerid)
 {
@@ -37,5 +38,6 @@ stock VIREN_ResetPlayerData(playerid)
     VIREN_Player[playerid][VIREN_Level] = 1;
     VIREN_Player[playerid][VIREN_XP] = 0;
     VIREN_Player[playerid][VIREN_LoginAttempts] = 0;
+    VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
     return 1;
 }
