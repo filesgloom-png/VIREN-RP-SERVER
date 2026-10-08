@@ -1,0 +1,35 @@
+{
+  "name": "VIREN RP | San Andreas",
+  "language": "Russian",
+  "network": {
+    "port": 7777,
+    "use_lan_mode": false,
+    "enable_query": true,
+    "stream_radius": 300.0,
+    "stream_rate": 1000,
+    "on_foot_sync_rate": 40,
+    "in_vehicle_sync_rate": 40,
+    "weapon_sync_rate": 40,
+    "use_omp_encryption": false
+  },
+  "max_players": 50,
+  "max_bots": 0,
+  "pawn": {
+    "legacy_plugins": [],
+    "main_scripts": ["virel 1"],
+    "side_scripts": []
+  },
+  "rcon": {
+    "enable": false,
+    "allow_teleport": false,
+    "password": "VIREN_RCON_DISABLED"
+  },
+  "logging": {
+    "enable": true,
+    "file": "log.txt",
+    "log_connection_messages": true
+  },
+  "artwork": {
+    "enable": false
+  }
+}
