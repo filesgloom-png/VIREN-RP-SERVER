@@ -149,6 +149,15 @@ stock VIREN_LSPD_GetTargetFromCommand(const cmdtext[], start, &targetid, reason[
     return 1;
 }
 
+stock bool:VIREN_LSPD_IsNear(playerid, targetid, Float:distance)
+{
+    new Float:px, Float:py, Float:pz;
+    new Float:tx, Float:ty, Float:tz;
+    GetPlayerPos(playerid, px, py, pz);
+    GetPlayerPos(targetid, tx, ty, tz);
+    return GetPlayerDistanceFromPoint(targetid, px, py, pz) <= distance;
+}
+
 stock bool:VIREN_LSPD_ValidTarget(playerid, targetid)
 {
     if (targetid < 0 || targetid >= MAX_PLAYERS ||
@@ -166,7 +175,7 @@ stock bool:VIREN_LSPD_ValidTarget(playerid, targetid)
         return false;
     }
 
-    if (GetPlayerDistanceFromPoint(targetid, GetPlayerX(playerid), GetPlayerY(playerid), GetPlayerZ(playerid)) > 5.0)
+    if (!VIREN_LSPD_IsNear(playerid, targetid, 5.0))
     {
         SendClientMessage(playerid, 0xFF6666FF, "Игрок слишком далеко.");
         return false;
@@ -339,6 +348,7 @@ stock VIREN_LSPD_CommandTicket(playerid, const cmdtext[])
     }
 
     new targetid;
+    new target_token[16];
     new amount_token[16];
     new pos = 8;
     new reason[64];
@@ -350,8 +360,8 @@ stock VIREN_LSPD_CommandTicket(playerid, const cmdtext[])
     while (cmdtext[pos] != EOS && cmdtext[pos] != ' ')
         pos++;
 
-    strmid(amount_token, cmdtext, start, pos, sizeof(amount_token));
-    targetid = strval(amount_token);
+    strmid(target_token, cmdtext, start, pos, sizeof(target_token));
+    targetid = strval(target_token);
 
     while (cmdtext[pos] == ' ')
         pos++;
@@ -360,8 +370,19 @@ stock VIREN_LSPD_CommandTicket(playerid, const cmdtext[])
     while (cmdtext[pos] != EOS && cmdtext[pos] != ' ')
         pos++;
 
+    while (cmdtext[pos] == ' ')
+        pos++;
+
+    start = pos;
+    while (cmdtext[pos] != EOS && cmdtext[pos] != ' ')
+        pos++;
+    strmid(amount_token, cmdtext, start, pos, sizeof(amount_token));
     new fine = strval(amount_token);
-    strmid(reason, cmdtext, start, pos, sizeof(reason));
+
+    while (cmdtext[pos] == ' ')
+        pos++;
+    if (cmdtext[pos] != EOS)
+        strmid(reason, cmdtext, pos, strlen(cmdtext), sizeof(reason));
 
     if (targetid < 0 || targetid >= MAX_PLAYERS || !IsPlayerConnected(targetid) ||
         targetid == playerid)
@@ -376,7 +397,7 @@ stock VIREN_LSPD_CommandTicket(playerid, const cmdtext[])
         return 1;
     }
 
-    if (GetPlayerDistanceFromPoint(targetid, GetPlayerX(playerid), GetPlayerY(playerid), GetPlayerZ(playerid)) > 5.0)
+    if (!VIREN_LSPD_IsNear(playerid, targetid, 5.0))
     {
         SendClientMessage(playerid, 0xFF6666FF, "Игрок слишком далеко.");
         return 1;
