@@ -145,7 +145,7 @@ stock VIREN_FactionCommand(playerid, const cmdtext[])
             VIREN_Player[playerid][VIREN_FactionRank],
             VIREN_FactionIsLeader(playerid) ? "Да" : "Нет");
         SendClientMessage(playerid, 0xFFFFFFFF, message);
-        SendClientMessage(playerid, 0x66CCFFFF, "Команды: /members, /faction join [1-4], /faction leave.");
+        SendClientMessage(playerid, 0x66CCFFFF, "Команды: /members, /faction leave, /faction transfer [playerid].");
         return 1;
     }
 
@@ -192,20 +192,6 @@ stock VIREN_FactionCommand(playerid, const cmdtext[])
     if (!strcmp(cmdtext, "/faction leave", true))
     {
         return VIREN_FactionLeave(playerid);
-    }
-
-    if (strfind(cmdtext, "/faction join ", true) == 0)
-    {
-        new faction_text[16];
-        strmid(faction_text, cmdtext, 14, strlen(cmdtext), sizeof(faction_text));
-
-        if (strlen(faction_text) == 0)
-        {
-            SendClientMessage(playerid, 0xFFCC66FF, "Использование: /faction join [1-4].");
-            return 1;
-        }
-
-        return VIREN_FactionJoin(playerid, strval(faction_text));
     }
 
     return 0;
