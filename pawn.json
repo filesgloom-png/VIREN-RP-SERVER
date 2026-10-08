@@ -1,0 +1,12 @@
+{
+  "user": "filesgloom-png",
+  "repo": "VIREN-RP-SERVER",
+  "preset": "openmp",
+  "entry": "gamemodes/virel.pwn",
+  "output": "gamemodes/virel.amx",
+  "dependencies": [
+    "openmultiplayer/omp-stdlib",
+    "pawn-lang/samp-stdlib@open.mp",
+    "pawn-lang/pawn-stdlib@open.mp"
+  ]
+}
