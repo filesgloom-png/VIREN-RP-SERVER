@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y libatomic1 libatomic1:i386
+          sudo apt-get install -y libatomic1 libatomic1:i386 tcpdump
 
       - name: Download open.mp runtime
         run: |
@@ -83,6 +83,13 @@ jobs:
           ss -lun | grep -E ':[[:space:]]*7777[[:space:]]' || ss -lun | grep ':7777'
           echo "VIREN RP server is running."
           echo "open.mp: $OPENMP_SERVER_VERSION"
+
+      - name: Start UDP packet capture
+        run: |
+          sudo tcpdump -ni any udp port 7777 -s 0 -U -C 10 -W 5 -w /tmp/viren-udp.pcap > /tmp/tcpdump.log 2>&1 &
+          echo $! > /tmp/tcpdump.pid
+          sleep 2
+          sudo ss -uapn | grep ':7777' || true
 
       - name: Install OpenPort UDP tunnel
         run: |
@@ -145,3 +152,18 @@ jobs:
           cat "$SERVER_DIR/runtime.log" 2>/dev/null || true
           echo "===== OPENPORT LOG ====="
           cat /tmp/openport.log 2>/dev/null || true
+          echo "===== TCPDUMP LOG ====="
+          cat /tmp/tcpdump.log 2>/dev/null || true
+          echo "===== UDP SOCKETS ====="
+          sudo ss -uapn || true
+
+      - name: Upload network diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: VIREN-RP-network-diagnostics
+          path: |
+            /tmp/viren-udp.pcap*
+            /tmp/tcpdump.log
+            /tmp/openport.log
+          if-no-files-found: warn
