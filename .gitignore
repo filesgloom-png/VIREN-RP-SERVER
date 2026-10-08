@@ -1,0 +1,4 @@
+gamemodes/*.amx
+sampctl/
+server/
+*.log
