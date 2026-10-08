@@ -205,6 +205,9 @@ stock VIREN_PlayerCommand(playerid, const cmdtext[])
     if (VIREN_EconomyCommand(playerid, cmdtext))
         return 1;
 
+    if (VIREN_JobCommand(playerid, cmdtext))
+        return 1;
+
     if (VIREN_RPCommand(playerid, cmdtext))
         return 1;
 
