@@ -4,18 +4,30 @@
 #define _VIREN_ADMIN_CORE_INCLUDED
 
 #define VIREN_ADMIN_PLAYER 0
-#define VIREN_ADMIN_MODERATOR 1
-#define VIREN_ADMIN_ADMIN 2
-#define VIREN_ADMIN_SENIOR 3
-#define VIREN_ADMIN_OWNER 4
+#define VIREN_ADMIN_HELPER 1
+#define VIREN_ADMIN_MODERATOR 2
+#define VIREN_ADMIN_JUNIOR 3
+#define VIREN_ADMIN_ADMIN 4
+#define VIREN_ADMIN_SENIOR 5
+#define VIREN_ADMIN_HEAD 6
+#define VIREN_ADMIN_LEAD 7
+#define VIREN_ADMIN_MANAGER 8
+#define VIREN_ADMIN_DEVELOPER 9
+#define VIREN_ADMIN_OWNER 10
 
 stock VIREN_AdminLevelName(level, output[], size)
 {
     switch (level)
     {
+        case VIREN_ADMIN_HELPER: format(output, size, "Helper");
         case VIREN_ADMIN_MODERATOR: format(output, size, "Moderator");
+        case VIREN_ADMIN_JUNIOR: format(output, size, "Junior Admin");
         case VIREN_ADMIN_ADMIN: format(output, size, "Admin");
         case VIREN_ADMIN_SENIOR: format(output, size, "Senior Admin");
+        case VIREN_ADMIN_HEAD: format(output, size, "Head Admin");
+        case VIREN_ADMIN_LEAD: format(output, size, "Lead Admin");
+        case VIREN_ADMIN_MANAGER: format(output, size, "Manager");
+        case VIREN_ADMIN_DEVELOPER: format(output, size, "Developer");
         case VIREN_ADMIN_OWNER: format(output, size, "Owner");
         default: format(output, size, "Player");
     }
