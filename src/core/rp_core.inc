@@ -46,7 +46,7 @@ stock VIREN_RPCommand(playerid, const cmdtext[])
     new text[128];
     new message[192];
 
-    if (!strncmp(cmdtext, "/me", 3, true))
+    if (strfind(cmdtext, "/me", true) == 0 && (cmdtext[3] == EOS || cmdtext[3] == ' '))
     {
         if (!VIREN_RPExtractText(cmdtext, 3, text, sizeof(text)))
         {
@@ -59,7 +59,7 @@ stock VIREN_RPCommand(playerid, const cmdtext[])
         return 1;
     }
 
-    if (!strncmp(cmdtext, "/do", 3, true))
+    if (strfind(cmdtext, "/do", true) == 0 && (cmdtext[3] == EOS || cmdtext[3] == ' '))
     {
         if (!VIREN_RPExtractText(cmdtext, 3, text, sizeof(text)))
         {
@@ -72,7 +72,7 @@ stock VIREN_RPCommand(playerid, const cmdtext[])
         return 1;
     }
 
-    if (!strncmp(cmdtext, "/try", 4, true))
+    if (strfind(cmdtext, "/try", true) == 0 && (cmdtext[4] == EOS || cmdtext[4] == ' '))
     {
         if (!VIREN_RPExtractText(cmdtext, 4, text, sizeof(text)))
         {
