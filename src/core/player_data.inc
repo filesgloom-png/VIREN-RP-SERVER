@@ -23,7 +23,10 @@ enum E_VIREN_PLAYER_DATA
     VIREN_FactionRank,
     bool:VIREN_OnDuty,
     VIREN_JobCooldown,
-    VIREN_LoginAttempts
+    VIREN_LoginAttempts,
+    VIREN_WantedLevel,
+    bool:VIREN_Cuffed,
+    VIREN_JailSeconds
 };
 
 new VIREN_Player[MAX_PLAYERS][E_VIREN_PLAYER_DATA];
@@ -50,6 +53,9 @@ stock VIREN_ResetPlayerData(playerid)
     VIREN_Player[playerid][VIREN_FactionRank] = 0;
     VIREN_Player[playerid][VIREN_OnDuty] = false;
     VIREN_Player[playerid][VIREN_LoginAttempts] = 0;
+    VIREN_Player[playerid][VIREN_WantedLevel] = 0;
+    VIREN_Player[playerid][VIREN_Cuffed] = false;
+    VIREN_Player[playerid][VIREN_JailSeconds] = 0;
     VIREN_Hud[playerid] = PlayerText:INVALID_TEXT_DRAW;
     return 1;
 }
