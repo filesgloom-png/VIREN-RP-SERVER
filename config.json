@@ -1,6 +1,5 @@
 {
   "name": "VIREN RP | San Andreas",
-  "language": "Russian",
   "network": {
     "port": 7777,
     "use_lan_mode": false,
@@ -9,7 +8,6 @@
     "stream_rate": 1000,
     "on_foot_sync_rate": 40,
     "in_vehicle_sync_rate": 40,
-    "weapon_sync_rate": 40,
     "use_omp_encryption": false
   },
   "max_players": 50,
