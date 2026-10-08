@@ -73,6 +73,7 @@ stock VIREN_WriteAccount(playerid)
     format(line, sizeof(line), "Bank=%d", VIREN_Player[playerid][VIREN_Bank]); fwrite(file, line);
     format(line, sizeof(line), "Level=%d", VIREN_Player[playerid][VIREN_Level]); fwrite(file, line);
     format(line, sizeof(line), "XP=%d", VIREN_Player[playerid][VIREN_XP]); fwrite(file, line);
+    format(line, sizeof(line), "Job=%d", VIREN_Player[playerid][VIREN_Job]); fwrite(file, line);
 
     fclose(file);
     return 1;
@@ -107,6 +108,9 @@ stock VIREN_LoadAccount(playerid)
 
     if (VIREN_ReadAccountValue(playerid, "XP", value, sizeof(value)))
         VIREN_Player[playerid][VIREN_XP] = strval(value);
+
+    if (VIREN_ReadAccountValue(playerid, "Job", value, sizeof(value)))
+        VIREN_Player[playerid][VIREN_Job] = strval(value);
 
     VIREN_Player[playerid][VIREN_HasCharacter] =
         (strlen(VIREN_Player[playerid][VIREN_CharacterName]) > 0);
