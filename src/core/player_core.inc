@@ -38,6 +38,7 @@ stock VIREN_PlayerDisconnect(playerid, reason)
         VIREN_WriteAccount(playerid);
     }
 
+    VIREN_HudDestroy(playerid);
     printf("[VIREN] Player %d disconnected. Reason: %d.", playerid, reason);
     VIREN_ResetPlayerData(playerid);
     return 1;
@@ -194,15 +195,24 @@ stock VIREN_PlayerDialogResponse(playerid, dialogid, response, listitem, const i
 
 stock VIREN_PlayerCommand(playerid, const cmdtext[])
 {
+    if (!VIREN_Player[playerid][VIREN_LoggedIn] ||
+        !VIREN_Player[playerid][VIREN_HasCharacter])
+    {
+        SendClientMessage(playerid, 0xFF6666FF, "Доступно только после авторизации и создания персонажа.");
+        return 1;
+    }
+
     if (!strcmp(cmdtext, "/stats", true))
     {
-        if (!VIREN_Player[playerid][VIREN_LoggedIn] || !VIREN_Player[playerid][VIREN_HasCharacter])
-        {
-            SendClientMessage(playerid, 0xFF6666FF, "Сначала авторизуйтесь и создайте персонажа.");
-            return 1;
-        }
-
         VIREN_ShowStats(playerid);
+        return 1;
+    }
+
+    if (!strcmp(cmdtext, "/help", true))
+    {
+        SendClientMessage(playerid, 0x66CCFFFF, "VIREN RP — команды:");
+        SendClientMessage(playerid, 0xFFFFFFFF, "/stats — статистика персонажа");
+        SendClientMessage(playerid, 0xFFFFFFFF, "/help — список доступных команд");
         return 1;
     }
 
